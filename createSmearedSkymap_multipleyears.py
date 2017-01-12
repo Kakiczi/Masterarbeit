@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import matplotlib.pyplot as plt
-# test lolololo
+
 ############################ IMPORTS ############################################################
 from functions4 import *
 import healpy as H
@@ -625,13 +625,31 @@ for i in range(0, RUN_NUMBER):
 			atmGPU[ob_id].reformSpec()
 	
 		##### SAVING RESULTS
+		
 		if EXPERIMENT:
 			#saveTitle = SAVE_DIR+"data/"+PREFIX+"smearedExperiment_Ev"+str(atmGPU[ob_id].NUMBER_SIMULATED_EVENTS)
 			saveTitle = SAVE_DIR
 		else:
 			#saveTitle = SAVE_DIR+"data/"+PREFIX+"smeared"+SIGNAL+"_Ev"+str(atmGPU[ob_id].NUMBER_SIMULATED_EVENTS)
 			saveTitle = SAVE_DIR
-	
+		
+		if RENORMALIZATION:
+			saveTitle = saveTitle+"Normed/"
+		else:
+			saveTitle = saveTitle+"Unnormed/"
+			
+		if USE_GALACTIC_PLANE:
+			saveTitle = saveTitle+"With_plane/"
+		else:
+			saveTitle = saveTitle+"No_plane/"
+		
+		saveTitle = saveTitle+SIGNAL+"_lmax="+str(l_max)+"/"+str(len(theta_source)-1)+"src/"+"Detector="+str(DETECTOR_config)+"/"	# 0src is just BGD
+		
+		
+		if not os.path.exists(saveTitle):
+			os.makedirs(saveTitle)	
+		
+		
 		if SAVE_MAPS == True:  ###Better be False ;-)
 			atmGPU[ob_id].saveLastSkymap(saveTitle+"_"+SMEARING_METHOD)
 			
@@ -655,14 +673,31 @@ for i in range(0, RUN_NUMBER):
 				atmGPU[ob_id].saveAngular(saveTitle,PREFIX,histogrammsave=False)				
 		
 		############################End of Loop############################################
-		
+	
+	##### SAVING RESULTS
+
 	if EXPERIMENT:
-		#saveTitle = SAVE_DIR+"data/"+PREFIX+"smearedExperiment_Ev"+str(NUMBER_SIMULATED_EVENTS)
+		#saveTitle = SAVE_DIR+"data/"+PREFIX+"smearedExperiment_Ev"+str(atmGPU[ob_id].NUMBER_SIMULATED_EVENTS)
 		saveTitle = SAVE_DIR
 	else:
-		#saveTitle = SAVE_DIR+"data/"+PREFIX+"smeared"+SIGNAL+"_Ev"+str(NUMBER_SIMULATED_EVENTS)
+		#saveTitle = SAVE_DIR+"data/"+PREFIX+"smeared"+SIGNAL+"_Ev"+str(atmGPU[ob_id].NUMBER_SIMULATED_EVENTS)
 		saveTitle = SAVE_DIR
 	
+	if RENORMALIZATION:
+		saveTitle = saveTitle+"Normed/"
+	else:
+		saveTitle = saveTitle+"Unnormed/"
+		
+	if USE_GALACTIC_PLANE:
+		saveTitle = saveTitle+"With_plane/"
+	else:
+		saveTitle = saveTitle+"No_plane/"
+	
+	saveTitle = saveTitle+SIGNAL+"_lmax="+str(l_max)+"/"+str(len(theta_source)-1)+"src/"+"Detector="+str(DETECTOR_config)+"/"	# 0src is just BGD
+
+	if not os.path.exists(saveTitle):
+		os.makedirs(saveTitle)
+
 	print "Merge Maps..."	
 	if SIGNAL == "PureSig" or SIGNAL == "VarSig":
 		theta_source_commulated=[]
