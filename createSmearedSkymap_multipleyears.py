@@ -19,6 +19,7 @@ l_max				= 1000
 SMEARING_METHOD = "none"
 RENORMALIZATION = True
 USE_GALACTIC_PLANE = True
+ONLY_GALACTIC_PLANE = False
 CORRECT_FOR_AEFF = True
 HIT_CENTERING 	= True
 USE_ALM 			  = True
@@ -43,6 +44,10 @@ GAMMA_BF, _ =get_best_fit_values()  #Best -Fit Values
 if "UseGalPlane" in allParam:
 	USE_GALACTIC_PLANE = bool(allParam["UseGalPlane"] == "True")
 else: USE_GALACTIC_PLANE = True
+
+if "OnlyGalPlane" in allParam:
+	ONLY_GALACTIC_PLANE = bool(allParam["OnlyGalPlane"] == "True")
+else: ONLY_GALACTIC_PLANE = False
 
 ##### GAMMA
 if "gamma" in allParam: 
@@ -139,7 +144,7 @@ if FULL_SPHERE_MODE == True:
 if catalog=="NVSS":
 	print "Reading Source Catalog" 
 	NVSS=readNVSS(skip_line=16)
-	catalog_map=createNVSSSkymap(NVSS, npix, USE_GALACTIC_PLANE, RENORMALIZATION, CORRECT_FOR_AEFF, NUMBER_SIMULATED_EVENTS)
+	catalog_map=createNVSSSkymap(NVSS, npix, USE_GALACTIC_PLANE, ONLY_GALACTIC_PLANE, RENORMALIZATION, CORRECT_FOR_AEFF, NUMBER_SIMULATED_EVENTS)
 
 ########################################################################################################
 
@@ -421,7 +426,7 @@ for i in range(0, RUN_NUMBER):
 				else:
 					print "Mismatch between lenght of Phi and Theta or N_Sources"
 			elif useCatalogPos!=-1:
-				theta_source, phi_source=getstrongestsources(NVSS, N=useCatalogPos)
+				theta_source, phi_source=getstrongestsources(NVSS, USE_GALACTIC_PLANE,ONLY_GALACTIC_PLANE, N=useCatalogPos)
 				theta.append(np.cos(theta_source)) 
 				theta_source=[theta_source]
 				phi_source=[phi_source]
@@ -536,7 +541,7 @@ for i in range(0, RUN_NUMBER):
 		atmGPU[ob_id].setFixedZenith(FIX_ZENITH, pathName=fileFixZenith)
 		atmGPU[ob_id].setRAAcc(RA_ACC, pathName=fileRAAcceptance)
 		atmGPU[ob_id].setGAMMA(GAMMA)
-		atmGPU[ob_id].setGalPlaneSwitch(USE_GALACTIC_PLANE)
+		atmGPU[ob_id].setGalPlaneSwitch(USE_GALACTIC_PLANE, ONLY_GALACTIC_PLANE)
 	####ADDITIONAL DIFFUSE SETTINGS ######
 		atmGPU[ob_id].setUseDiffBG(USE_DIFF_BG)
 	
@@ -639,11 +644,14 @@ for i in range(0, RUN_NUMBER):
 			saveTitle = saveTitle+"Unnormed/"
 			
 		if USE_GALACTIC_PLANE:
-			saveTitle = saveTitle+"With_plane/"
+			if ONLY_GALACTIC_PLANE:
+				saveTitle = saveTitle+"Only_plane/"
+			else:
+				saveTitle = saveTitle+"With_plane/"
 		else:
 			saveTitle = saveTitle+"No_plane/"
-		
-		saveTitle = saveTitle+SIGNAL+"_lmax="+str(l_max)+"/"+str(len(theta_source)-1)+"src/"+"Detector="+str(DETECTOR_config)+"/"	# 0src is just BGD
+														   # str(len(theta_source)-1)
+		saveTitle = saveTitle+SIGNAL+"_lmax="+str(l_max)+"/"+str(N_SOURCES[0])+"src/"+"Detector="+str(DETECTOR_config)+"/"	# 0src is just BGD
 		
 		
 		if not os.path.exists(saveTitle):
@@ -687,13 +695,16 @@ for i in range(0, RUN_NUMBER):
 		saveTitle = saveTitle+"Normed/"
 	else:
 		saveTitle = saveTitle+"Unnormed/"
-		
+
 	if USE_GALACTIC_PLANE:
-		saveTitle = saveTitle+"With_plane/"
+			if ONLY_GALACTIC_PLANE:
+				saveTitle = saveTitle+"Only_plane/"
+			else:
+				saveTitle = saveTitle+"With_plane/"
 	else:
 		saveTitle = saveTitle+"No_plane/"
-	
-	saveTitle = saveTitle+SIGNAL+"_lmax="+str(l_max)+"/"+str(len(theta_source)-1)+"src/"+"Detector="+str(DETECTOR_config)+"/"	# 0src is just BGD
+
+	saveTitle = saveTitle+SIGNAL+"_lmax="+str(l_max)+"/"+str(N_SOURCES[0])+"src/"+"Detector="+str(DETECTOR_config)+"/"	# 0src is just BGD
 
 	if not os.path.exists(saveTitle):
 		os.makedirs(saveTitle)

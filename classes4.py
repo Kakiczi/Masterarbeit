@@ -303,8 +303,9 @@ class multiPoleAnalysis:
 		self.renormSkymaps = ren	
 		
 	#### SETTING Whether to use the galactic plane or not
-	def setGalPlaneSwitch(self, galPlane):
+	def setGalPlaneSwitch(self, galPlane, onlyGalPlane):
 		self.useGalPlane = galPlane
+		self.onlyGalPlane = onlyGalPlane
 		
 	#### SETTING UseClLog ####
 	def setUseClLog(self, ren):
@@ -1033,12 +1034,17 @@ class multiPoleAnalysis:
 			theta, phi = centerHits(self.nside,theta, phi)
 
 
-		#### EXCLUDING THE GALACTIC PLANE ...
-		if not self.useGalPlane:
-			galcord=galactic(phi,zen2dec_noticecube(dec2zen(theta)))[1] # to avoid icecube coordinates bullshit
-
+		
+		galcord=galactic(phi,zen2dec_noticecube(dec2zen(theta)))[1] # to avoid icecube coordinates bullshit
+		
+		if not self.useGalPlane:				#### EXCLUDING THE GALACTIC PLANE ...
 			for i in range(len(galcord)):
 				if (abs(galcord[i]) < np.radians(5)):
+					theta[i]=0
+					phi[i]=0
+		elif self.onlyGalPlane:				#### OR EVERYTHING ELSE ...
+			for i in range(len(galcord)):
+				if (abs(galcord[i]) > np.radians(5)):
 					theta[i]=0
 					phi[i]=0
 		

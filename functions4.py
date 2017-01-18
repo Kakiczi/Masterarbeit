@@ -376,14 +376,34 @@ def NumberofSigEvents(Gamma, Detector):
 	ndict= np.load(localPath+"MCode/data/NumberNeutrinos"+str(Gamma)+".npy")[()]
 	nEvents = [int(ndict[i][0]) for i in DETECTOR]
 	return sum(nEvents)
+	
+def getstrongestsources(NVSS, GalPlane=True, OnlyGalPlane=False, N=100):
+	
+	flux_pre=np.array(NVSS["Flux"])
+	zenith_pre=np.array(NVSS["Dec(2000)"]) # in degrees
+	ra_pre=np.array(NVSS["RA(2000)"])			# in degrees
+	flux=[]
+	zenith=[]
+	ra=[]
 
-def getstrongestsources(NVSS, N=100):
-    ind = np.argpartition(NVSS["Flux"], -N)[-N:]
-    Flux=np.array(NVSS["Flux"])[ind]
-    Azimuth=np.radians(np.array(NVSS["RA(2000)"])[ind])
-    Zenith=dec2zen(np.radians(np.array(NVSS["Dec(2000)"])[ind]))
-    return Zenith, Azimuth
-    
+	for i in range(len(zenith_pre)):
+		galcoord=galactic(ra_pre[i]*np.pi/180.,zenith_pre[i]*np.pi/180.)[1]
+		if (zenith_pre[i]>np.radians(-5)):
+			if ((galcoord>np.radians(5) or galcoord<np.radians(-5) or GalPlane==True) and OnlyGalPlane==False):
+				flux.append(flux_pre[i])
+				zenith.append(zenith_pre[i])
+				ra.append(ra_pre[i])
+			elif (OnlyGalPlane==True and (galcoord<np.radians(5) or galcoord>np.radians(-5))):
+				flux.append(flux_pre[i])
+				zenith.append(zenith_pre[i])
+				ra.append(ra_pre[i])
+				
+	ind = np.argpartition(flux, -N)[-N:]
+	Azimuth=np.radians(ra)[ind]
+	Zenith=dec2zen(np.radians(zenith)[ind])
+	return Zenith, Azimuth
+
+
 def getweakestsources(NVSS, N=100):
     minval=np.min(NVSS["Flux"])*5
     inds = np.where(NVSS["Flux"]<minval)
@@ -480,7 +500,7 @@ def readNVSS(skip_line=16):
 	
 	return NVSS
 
-def createNVSSSkymap(NVSS, npix, UseGalPlane=True, Norm=False, AeffCorrection=False ,nEvents=1):
+def createNVSSSkymap(NVSS, npix, UseGalPlane=True, OnlyGalPlane=False, Norm=False, AeffCorrection=False ,nEvents=1):
 	map_delta = np.zeros(npix)
 	declination_pre=np.array(NVSS["Dec(2000)"])*np.pi/180.
 	ra_pre=np.array(NVSS["RA(2000)"])*np.pi/180.
@@ -494,11 +514,12 @@ def createNVSSSkymap(NVSS, npix, UseGalPlane=True, Norm=False, AeffCorrection=Fa
 	for i in range(len(declination_pre)):
 		galcoord=galactic(ra_pre[i],declination_pre[i])[1]
 		if (declination_pre[i]>np.radians(-5)):
-			if (galcoord>np.radians(5) or galcoord<np.radians(-5) or UseGalPlane==True):
+			if ((galcoord>np.radians(5) or galcoord<np.radians(-5) or UseGalPlane==True) and OnlyGalPlane==False):
 				declination.append(declination_pre[i])
 				ra.append(ra_pre[i])
-				
-	 
+			elif (OnlyGalPlane==True and (galcoord<np.radians(5) or galcoord>np.radians(-5))):
+				declination.append(declination_pre[i])
+				ra.append(ra_pre[i])
 	declination=np.array(declination)
 	ra=np.array(ra)
 	
