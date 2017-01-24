@@ -17,8 +17,8 @@ PROJECT_ID		= str(sys.argv[1])	#sets project name, can be anything
 SIGNAL 			= str(sys.argv[2])	#PureAtm, PureSig, VarSig ((VarAtm))
 NSou=str(sys.argv[4])
 if SIGNAL=="PureAtm" or SIGNAL=="PureSig" or NSou=="[0]":
-	RUNS_PER_JOB 	= 40	#100
-	JOBS 		= 25	#100
+	RUNS_PER_JOB 	= 40	#40
+	JOBS 		= 25	#25
 elif SIGNAL=="VarSig":
 	RUNS_PER_JOB 	= 40	#40
 	JOBS 		= 25	#25 for VarSig, 100 for Pure*

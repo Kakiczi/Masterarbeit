@@ -393,7 +393,7 @@ def getstrongestsources(NVSS, GalPlane=True, OnlyGalPlane=False, N=100):
 				flux.append(flux_pre[i])
 				zenith.append(zenith_pre[i])
 				ra.append(ra_pre[i])
-			elif (OnlyGalPlane==True and (galcoord<np.radians(5) or galcoord>np.radians(-5))):
+			elif (OnlyGalPlane==True and abs(galcoord)<np.radians(5)):
 				flux.append(flux_pre[i])
 				zenith.append(zenith_pre[i])
 				ra.append(ra_pre[i])
@@ -517,7 +517,7 @@ def createNVSSSkymap(NVSS, npix, UseGalPlane=True, OnlyGalPlane=False, Norm=Fals
 			if ((galcoord>np.radians(5) or galcoord<np.radians(-5) or UseGalPlane==True) and OnlyGalPlane==False):
 				declination.append(declination_pre[i])
 				ra.append(ra_pre[i])
-			elif (OnlyGalPlane==True and (galcoord<np.radians(5) or galcoord>np.radians(-5))):
+			elif (OnlyGalPlane==True and abs(galcoord)<np.radians(5)):
 				declination.append(declination_pre[i])
 				ra.append(ra_pre[i])
 	declination=np.array(declination)

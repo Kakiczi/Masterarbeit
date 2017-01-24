@@ -58,6 +58,8 @@ class MergeAnalysis:
 		self.effCl_means=[]
 		self.effCl_errors=[]
 		self.cl_all=[]
+		self.cl_auto_all=[]
+		self.cl_auto_cat=[]
 		self.al0_all=[]
 		self.effCl_all=[]
 		self.useAlm=True
@@ -65,6 +67,7 @@ class MergeAnalysis:
 		self.catalog=""
 		self.NUMBER_RAN_RUNS	=	1
 		self.SAVE_ALL_DATA = False
+		self.SAVE_Cls = True
 		self.useClLog=False
 		if self.useAlm == True:
 			self.alm_all = []
@@ -90,21 +93,32 @@ class MergeAnalysis:
 		np.savetxt(nTitle+"effClAll_"+prefix+".txt", self.effCl_all)
 		print "effCl data successfully saved to... "+nTitle+"_effClAll.txt"
 		#self.saveSignalInfo(nTitle)
-		
+
+	def saveCls(self, nTitle="", prefix=""):
+		np.savetxt(nTitle+"ClAll_"+prefix+".txt", self.cl_all)
+		print "Cl data successfully saved to... "+nTitle+"ClAll_"+prefix+".txt"
+		np.savetxt(nTitle+"ClAutoAll_"+prefix+".txt", self.cl_auto_all)
+		print "Cl data successfully saved to... "+nTitle+"ClAutoAll_"+prefix+".txt"
+	
+	def saveCatCl(self, nTitle=""):
+		if not os.path.exists(nTitle+"CatCl.txt"): 
+			np.savetxt(nTitle+"CatCl.txt", self.cl_auto_cat)
+		print "Cl data successfully saved to... "+nTitle+"CatCl.txt"
 
 	def analyseMap(self):
 		## generate alm, Cl, effCl
 		if self.catalog=="NVSS":
 			print "Calculate Cross Correlations for NVSS Sky Survey"
-			cl_delta, alm_delta, alm_delta1 = H.anafast(self.map_delta, self.catalog_map,  lmax=self.l_max, alm=True)	
-			effClcur = retEffCl([alm_delta, alm_delta1], lmax=self.l_max)
+			cl_delta, alm_delta, alm_delta1 = H.anafast(self.map_delta, self.catalog_map,  lmax=self.l_max, alm=True) 
+			cl_auto_delta, alm_auto_delta = H.anafast(self.map_delta, lmax=self.l_max, alm=True)	# map auto-correlation
+			cl_auto_cat, alm_auto_cat = H.anafast(self.catalog_map, lmax=self.l_max, alm=True)	# cat auto-correlation
+			#effClcur = retEffCl([alm_delta, alm_delta1], lmax=self.l_max)
 		else:
-			cl_delta, alm_delta = H.anafast(self.map_delta, lmax=self.l_max, alm=True)	
-			effClcur = retEffCl([alm_delta], lmax=self.l_max)
+			cl_auto_delta, alm_auto_delta = H.anafast(self.map_delta, lmax=self.l_max, alm=True)	
+			#effClcur = retEffCl([alm_delta], lmax=self.l_max)
 			
 		if self.SAVE_ALL_DATA:			
 			al0curr = absList(getAl0List(alm_delta, self.l_max))
-		
 			
 		if self.useClLog == True:
 			cl_log_delta = calcClLogFromAlm(alm_delta, 400)
@@ -118,7 +132,14 @@ class MergeAnalysis:
 			self.cl_all.append(cl_delta)
 			self.al0_all.append(al0curr)
 		
-		self.effCl_all.append(effClcur)
+		if self.SAVE_Cls:
+			if self.catalog=="NVSS":
+				self.cl_all.append(cl_delta)
+			self.cl_auto_all.append(cl_auto_delta)
+			if len(self.cl_auto_cat)==0:
+				self.cl_auto_cat=cl_auto_cat
+
+		#self.effCl_all.append(effClcur)
 		
 		if self.useAlm == True:
 			self.alm_all.append(alm_delta)
@@ -202,7 +223,8 @@ class multiPoleAnalysis:
 		self.READ_DIR = nReadDir
 		self.GAMMA=0.
 		self.GAMMA_BF,_=get_best_fit_values()
-		self.cl_all = []
+		self.cl_all=[]
+		self.cl_auto_all=[]
 		self.effCl_all = []
 		self.cl_log_all = []
 		self.al0_all = []
@@ -218,6 +240,7 @@ class multiPoleAnalysis:
 		self.l_show = 3
 		self.l_save = 8 # 8
 		self.useAlm = True
+		self.SAVE_Cls = True
 		if self.useAlm == True:
 			self.alm_all = []
 			self.alm_all_abs = []
@@ -985,8 +1008,11 @@ class multiPoleAnalysis:
 	#### ANALYSE MAP
 	def analyseMap(self):
 		## generate alm, Cl, effCl
-		
+			
 		cl_delta, alm_delta = H.anafast(self.map_delta, lmax=self.l_max, alm=True)
+		cl_auto_delta, alm_auto_delta = H.anafast(self.map_delta, lmax=self.l_max, alm=True)	# map auto-correlation
+		#cl_auto_cat, alm_auto_cat = H.anafast(self.catalog_map, lmax=self.l_max, alm=True)	# cat auto-correlation
+		
 		if self.SAVE_ALL_DATA:
 			al0curr = absList(getAl0List(alm_delta, self.l_max))
 			al0curr_normd = absList(getAl0List(alm_delta_normd, self.l_max))
@@ -1006,6 +1032,12 @@ class multiPoleAnalysis:
 			self.al0_all.append(al0curr)
 		
 		self.effCl_all.append(effClcur)
+		
+		#if self.SAVE_Cls:
+		#	self.cl_all.append(cl_delta)
+		#	self.cl_auto_all.append(cl_auto_delta)
+		#	if len(self.cl_auto_cat)==0:
+		#		self.cl_auto_cat=cl_auto_cat
 		
 		if self.useAlm == False:
 			print "***"

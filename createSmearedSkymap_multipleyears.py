@@ -49,6 +49,13 @@ if "OnlyGalPlane" in allParam:
 	ONLY_GALACTIC_PLANE = bool(allParam["OnlyGalPlane"] == "True")
 else: ONLY_GALACTIC_PLANE = False
 
+if "useAlm" in allParam:
+	USE_ALM = bool(allParam["useAlm"] == "True")
+else: USE_ALM = False
+
+if "Renorm" in allParam:
+	RENORMALIZATION = bool(allParam["Renorm"] == "True")
+else: RENORMALIZATION = True
 ##### GAMMA
 if "gamma" in allParam: 
 	GAMMA = float(allParam["gamma"])
@@ -650,8 +657,14 @@ for i in range(0, RUN_NUMBER):
 				saveTitle = saveTitle+"With_plane/"
 		else:
 			saveTitle = saveTitle+"No_plane/"
-														   # str(len(theta_source)-1)
-		saveTitle = saveTitle+SIGNAL+"_lmax="+str(l_max)+"/"+str(N_SOURCES[0])+"src/"+"Detector="+str(DETECTOR_config)+"/"	# 0src is just BGD
+
+		if N_SOURCES[0]>0:
+			mu_txt="_mu"+str(int(MU_SOURCES[0]))
+		else:
+			mu_txt=""
+														   # str(len(theta_source)-1)	
+		saveTitle = saveTitle+SIGNAL+"_lmax="+str(l_max)+"/"+str(N_SOURCES[0])+"src"+mu_txt+"/"+"Detector="+str(DETECTOR_config)+"/"	# 0src is just BGD
+
 		
 		
 		if not os.path.exists(saveTitle):
@@ -704,7 +717,12 @@ for i in range(0, RUN_NUMBER):
 	else:
 		saveTitle = saveTitle+"No_plane/"
 
-	saveTitle = saveTitle+SIGNAL+"_lmax="+str(l_max)+"/"+str(N_SOURCES[0])+"src/"+"Detector="+str(DETECTOR_config)+"/"	# 0src is just BGD
+	if N_SOURCES[0]>0:
+		mu_txt="_mu"+str(int(MU_SOURCES[0]))
+	else:
+		mu_txt=""
+
+	saveTitle = saveTitle+SIGNAL+"_lmax="+str(l_max)+"/"+str(N_SOURCES[0])+"src"+mu_txt+"/"+"Detector="+str(DETECTOR_config)+"/"	# 0src is just BGD
 
 	if not os.path.exists(saveTitle):
 		os.makedirs(saveTitle)
@@ -725,8 +743,11 @@ for i in range(0, RUN_NUMBER):
 	#atmGPU[ob_id].plotFirstAlms(l_max)
 	mergeGPU.analyseMap()
 	mergeGPU.calcMeans(alm=USE_ALM)
-	mergeGPU.saveCleffClList(saveTitle,PREFIX)
-	mergeGPU.saveAlms(saveTitle,PREFIX)
+	#mergeGPU.saveCleffClList(saveTitle,PREFIX)
+	if USE_ALM:
+		mergeGPU.saveAlms(saveTitle,PREFIX)
+	mergeGPU.saveCls(saveTitle,PREFIX)
+	mergeGPU.saveCatCl(saveTitle)
 
 	#~ atmGPU[ob_id].saveClLogList(saveTitle)
 	#if not EXPERIMENT and (SIGNAL == "PureSig" or SIGNAL == "VarSig"):
