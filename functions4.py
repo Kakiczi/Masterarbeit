@@ -90,13 +90,16 @@ def plot_aeff_vs_dec_energy(mc, logE_range=(2,9), sinDec_range=(-1,1), bins=[25,
 def getEffAreaVsDec(): ###		Getting the effective area as a function of the declination angle:
 	datapath="/net/scratch_icecube4/user/glauch/DATA/"
 	DETECTOR=LoadDETECTOR("1111")
-	Aeff_res=plot_aeff_vs_dec_energy(simulationLoad(DETECTOR[1], datapath, 2.13)[0], logE_range=(2,9), sinDec_range=(np.sin(np.radians(-6)),1), bins=[40,40], title=None, savepath=None)
+	index=2.13 # assumed spectral index
+	Aeff_res=plot_aeff_vs_dec_energy(simulationLoad(DETECTOR[1], datapath, index)[0], logE_range=(2,9), sinDec_range=(np.sin(np.radians(-6)),1), bins=[40,40], title=None, savepath=None)
 	
 	X,Y=np.meshgrid(Aeff_res[2],Aeff_res[1])
 	H=Aeff_res[0]
 	
+	Aeff= np.sum(H, axis=1)*(X[0][1]-X[0][0])
 	deltaE=np.array([10**Aeff_res[1][i+1]-10**Aeff_res[1][i] for i in range(len(Aeff_res[2])-1)])
-	Aeff_theta=[np.sum(np.concatenate(H[:,i:i+1])*deltaE)/np.sum(deltaE) for i in range(len(X)-1)]
+	E=np.array([(10**Aeff_res[1][i+1]+10**Aeff_res[1][i])/2 for i in range(len(Aeff_res[2])-1)])
+	Aeff_theta=[np.sum((E**(-index))*np.concatenate(H[:,i:i+1])*deltaE)/np.sum((E**(-index))*deltaE) for i in range(len(X)-1)]
 	
 	x=np.degrees(np.arcsin(np.linspace(np.sin(np.radians(-6)),1.,num=len(Aeff_theta))))
 	Aeff_theta_interpolated = interp1d(x, Aeff_theta)

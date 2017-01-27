@@ -101,8 +101,8 @@ class MergeAnalysis:
 		print "Cl data successfully saved to... "+nTitle+"ClAutoAll_"+prefix+".txt"
 	
 	def saveCatCl(self, nTitle=""):
-		if not os.path.exists(nTitle+"CatCl.txt"): 
-			np.savetxt(nTitle+"CatCl.txt", self.cl_auto_cat)
+		#if not os.path.exists(nTitle+"CatCl.txt"): 
+		np.savetxt(nTitle+"CatCl.txt", self.cl_auto_cat)
 		print "Cl data successfully saved to... "+nTitle+"CatCl.txt"
 
 	def analyseMap(self):
