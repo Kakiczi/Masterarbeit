@@ -1067,18 +1067,24 @@ class multiPoleAnalysis:
 
 
 		
-		galcord=galactic(phi,zen2dec_noticecube(dec2zen(theta)))[1] # to avoid icecube coordinates bullshit
+		galcord=galactic(phi,zen2dec_noticecube(dec2zen(theta)))[1] # to avoid icecube coordinates bullshite
 		
 		if not self.useGalPlane:				#### EXCLUDING THE GALACTIC PLANE ...
 			for i in range(len(galcord)):
 				if (abs(galcord[i]) < np.radians(5)):
-					theta[i]=0
-					phi[i]=0
+					#theta[i]=0 this was OBVIOUSLY wrong ...
+					#phi[i]=0
+					new_theta=np.delete(theta,i)
+					new_phi=np.delete(phi,i)
 		elif self.onlyGalPlane:				#### OR EVERYTHING ELSE ...
 			for i in range(len(galcord)):
 				if (abs(galcord[i]) > np.radians(5)):
-					theta[i]=0
-					phi[i]=0
+					#theta[i]=0
+					#phi[i]=0
+					new_theta=np.delete(theta,i)
+					new_phi=np.delete(phi,i)
+		theta=new_theta
+		phi=new_phi
 		
 		starttime = tm.time()
 		if self.smearingMethod != "none":
