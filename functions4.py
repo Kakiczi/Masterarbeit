@@ -536,6 +536,8 @@ def createNVSSSkymap(NVSS, npix, UseGalPlane=True, OnlyGalPlane=False, Norm=Fals
 	# (Re-)normalizaion:
 	if Norm:
 		map_delta=renormSkymap(map_delta, nEvents)
+	else:
+		map_delta=adjustUnitsSkymap(map_delta)
 	return map_delta
 
 
@@ -1539,6 +1541,14 @@ def getMinMaxRanges(li, puffer=False, res=200):
 def renormSkymap(thisMap, NEvents):
 	norm = NEvents*1.0/sum(thisMap)
 	newMap = thisMap*norm
+	return newMap
+	
+#### ADJUSTS THE SKYMAP TO MATCH THE UNITS OF THE MC (mJy -> # EVENTS) ####
+def adjustUnitsSkymap(thisMap):
+	E_avg = 62922635.8362 # GeV
+	units_conv = 6.2415091*10**(-21)
+	factor = units_conv*1.0/E_avg
+	newMap = thisMap*factor
 	return newMap
 	
 	
