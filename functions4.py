@@ -1539,14 +1539,15 @@ def getMinMaxRanges(li, puffer=False, res=200):
 	
 #### RENORMS A GIVEN SKYMAP TO EVENT NUMBER ####
 def renormSkymap(thisMap, NEvents):
-	norm = NEvents*1.0/sum(thisMap)
+	norm = float(NEvents)*1.0/sum(thisMap)
 	newMap = thisMap*norm
 	return newMap
 	
 #### ADJUSTS THE SKYMAP TO MATCH THE UNITS OF THE MC (mJy -> # EVENTS) ####
 def adjustUnitsSkymap(thisMap):
-	E_avg = 62922635.8362 # GeV
-	units_conv = 6.2415091*10**(-21)
+	#E_avg = 62922635.8362 # GeV (IC)
+	E_avg = 5.79*10**(-15) # GeV (NVSS)
+	units_conv = 6.2415091*10**(-24)
 	factor = units_conv*1.0/E_avg
 	newMap = thisMap*factor
 	return newMap

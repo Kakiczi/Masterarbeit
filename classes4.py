@@ -1061,30 +1061,27 @@ class multiPoleAnalysis:
 		
 	#### HITBOOL TO MAP SMEARED OR UNSMEARED		
 	def hitBool2Map(self, theta, phi, E=[]):
+
 		#### HIT CENTERING ...
 		if self.centerHits == True:
 			theta, phi = centerHits(self.nside,theta, phi)
-
-
 		
+		bad_indices = [] # workaround to get this work with conditional loops
+
 		galcord=galactic(phi,zen2dec_noticecube(dec2zen(theta)))[1] # to avoid icecube coordinates bullshite
 		
 		if not self.useGalPlane:				#### EXCLUDING THE GALACTIC PLANE ...
 			for i in range(len(galcord)):
 				if (abs(galcord[i]) < np.radians(5)):
-					#theta[i]=0 this was OBVIOUSLY wrong ...
-					#phi[i]=0
-					new_theta=np.delete(theta,i)
-					new_phi=np.delete(phi,i)
+					bad_indices.append(i)
+					
 		elif self.onlyGalPlane:				#### OR EVERYTHING ELSE ...
 			for i in range(len(galcord)):
 				if (abs(galcord[i]) > np.radians(5)):
-					#theta[i]=0
-					#phi[i]=0
-					new_theta=np.delete(theta,i)
-					new_phi=np.delete(phi,i)
-		theta=new_theta
-		phi=new_phi
+					bad_indices.append(i)
+
+		theta=np.delete(theta, bad_indices)
+		phi=np.delete(phi, bad_indices)
 		
 		starttime = tm.time()
 		if self.smearingMethod != "none":

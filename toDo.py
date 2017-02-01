@@ -3,8 +3,12 @@ import os
 						#Remember to give DIFFERENT job names!
 						#Aaand putting empty space in the name is not such a brilliant idea ...
 toDo = """
-python create_dagman.py "BGD3_cor" "VarSig" [30] [0] detector="1111" gamma=2.13 catalog="NVSS" useAlm=True Renorm=True UseGalPlane=False OnlyGalPlane=False
-python create_dagman.py "SIG3_cor" "VarSig" [30] [5] detector="1111" gamma=2.13 catalog="NVSS" useCatalogPos=5 useAlm=True Renorm=True UseGalPlane=False OnlyGalPlane=False
+python create_dagman.py "BGD1" "VarSig" [30] [0] detector="1111" gamma=2.13 catalog="NVSS" useAlm=True Renorm=True UseGalPlane=True OnlyGalPlane=False
+python create_dagman.py "BGD2" "VarSig" [30] [0] detector="1111" gamma=2.13 catalog="NVSS" useAlm=True Renorm=True UseGalPlane=True OnlyGalPlane=True
+python create_dagman.py "BGD3" "VarSig" [30] [0] detector="1111" gamma=2.13 catalog="NVSS" useAlm=True Renorm=True UseGalPlane=False OnlyGalPlane=False
+python create_dagman.py "SIG1" "VarSig" [30] [5] detector="1111" gamma=2.13 catalog="NVSS" useCatalogPos=5 useAlm=True Renorm=True UseGalPlane=True OnlyGalPlane=False
+python create_dagman.py "SIG2" "VarSig" [30] [5] detector="1111" gamma=2.13 catalog="NVSS" useCatalogPos=5 useAlm=True Renorm=True UseGalPlane=True OnlyGalPlane=True
+python create_dagman.py "SIG3" "VarSig" [30] [5] detector="1111" gamma=2.13 catalog="NVSS" useCatalogPos=5 useAlm=True Renorm=True UseGalPlane=False OnlyGalPlane=False
 """
 
 #python create_dagman.py "BGD1" "VarSig" [30] [0] detector="1111" gamma=2.13 catalog="NVSS" useAlm=True Renorm=True UseGalPlane=True OnlyGalPlane=False
